@@ -1,2 +1,58 @@
 # FINAL-YEAR-PROJECT
 FINAL YEAR PROJECT ALL PROJECT WORK HERE.
+
+IoT BASED EARLY FAULT DETECTION FOR NOISE & VIBRATION IN HEALTHCARE EQUIPMENT
+
+#include <SoftwareSerial.h>
+
+#define VIBRATION_SENSOR 3  // Digital Pin for SW-420
+#define MIC_SENSOR A0       // Analog Pin for Microphone
+#define BUZZER 5            // Buzzer Pin
+#define ALERT_LED 6         // Alert LED Pin
+
+SoftwareSerial BT(2, 11); // HC-05 TX to D10, RX to D11
+
+int vibrationState = 0;
+int noiseThreshold = 470;  // Adjust based on microphone readings
+int vibrationThreshold = 1; // Adjust based on vibration readings
+
+void setup() {
+    pinMode(VIBRATION_SENSOR, INPUT);
+    pinMode(BUZZER, OUTPUT);
+    pinMode(ALERT_LED, OUTPUT);
+    pinMode(MIC_SENSOR,INPUT);
+    BT.begin(9600);  // Bluetooth module baud rate
+    Serial.begin(9600);
+}
+
+void loop() {
+    vibrationState = digitalRead(VIBRATION_SENSOR);
+    int noiseLevel = analogRead(MIC_SENSOR);
+    Serial.println(noiseLevel);
+    if (vibrationState == HIGH) {
+        BT.println("Excessive vibration detected !! Please, Check the system.");
+    }
+
+    if (noiseLevel > noiseThreshold) {
+        BT.println("Excessive noise detected !! Please, Check the system.");
+        
+        alertSystem();
+    }
+
+    delay(500);
+}
+
+void alertSystem() {
+    digitalWrite(BUZZER, HIGH);
+    digitalWrite(ALERT_LED, HIGH);
+    delay(100);
+    digitalWrite(BUZZER, LOW);
+    digitalWrite(ALERT_LED, LOW);
+    delay(100);
+    digitalWrite(BUZZER, HIGH);
+    digitalWrite(ALERT_LED, HIGH);
+    delay(100);
+    digitalWrite(BUZZER, LOW);
+    digitalWrite(ALERT_LED, LOW);
+    delay(100);
+}
